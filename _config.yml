@@ -8,17 +8,17 @@ highlighter:         pygments
 permalink:           pretty
 
 # Setup
-title:               gansteed
+title:               commandzi
 tagline:             'my notes and blogs'
 description:         '你的眼睛能看多远'
 url:                 /
 baseurl:             /
-paginate:            8
+paginate:            15
 
 # About/contact
 author:
-  name:              gansteed
-  disqus:            gansteed
+  name:              commandzi
+  disqus:            commandzi
 
 # Custom vars
 saying:              'Stand on the shoulders of giants, observing details of the world.'
