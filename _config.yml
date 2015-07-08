@@ -2,7 +2,7 @@
 title: 非生物
 # email: chn.lyzasd(@)gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-   闻到有先后
+   闻道有先后
 baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://yourdomain.com" # the base hostname & protocol for your site
 github_username:  chn-lyzhi
