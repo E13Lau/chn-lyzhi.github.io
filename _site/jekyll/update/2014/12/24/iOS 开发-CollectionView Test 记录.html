@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>简历</title>
-  <meta name="description" content="个人博客
-">
+  <title>iOS 开发-CollectionView Test 记录</title>
+  <meta name="description" content="首先storyboard拖拽进一个CollectionView，连接到.m，创建属性。">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://yourdomain.com/简历/">
+  <link rel="canonical" href="http://yourdomain.com/jekyll/update/2014/12/24/iOS%20%E5%BC%80%E5%8F%91-CollectionView%20Test%20%E8%AE%B0%E5%BD%95.html">
   <link rel="alternate" type="application/rss+xml" title="非生物" href="http://yourdomain.com/feed.xml" />
 </head>
 
@@ -36,21 +35,19 @@
       <div class="trigger">
         
           
-          <a class="page-link" href="/about/">About</a>
+          <a class="page-link" href="/关于/">关于</a>
           
         
           
         
           
         
-          
-        
-          
-          <a class="page-link" href="/简历/">简历</a>
           
         
           
           <a class="page-link" href="/项目/">项目</a>
+          
+        
           
         
       </div>
@@ -66,58 +63,69 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">简历</h1>
+    <h1 class="post-title">iOS 开发-CollectionView Test 记录</h1>
+    <p class="post-meta">Dec 24, 2014</p>
   </header>
 
   <article class="post-content">
-    <h1 id="section">刘一智</h1>
-<p>##广东东软学院 － 大专</p>
+    <p>首先storyboard拖拽进一个CollectionView，连接到.m，创建属性。</p>
 
-<h1 id="section-1">联系方式</h1>
-<ul>
-  <li>手机: 13692589562</li>
-  <li>Email: chn.lyzasd@gmail.com</li>
-  <li>QQ: 932081907</li>
-</ul>
+<p>当前viewController继承
+<code>&lt;UICollectionViewDataSource,UICollectionViewDelegate,UICollectionViewDelegateFlowLayout&gt;</code></p>
 
-<h1 id="section-2">个人信息</h1>
-<ul>
-  <li><strong>刘一智</strong>/男/1992</li>
-  <li>大专/广东东软学院软件开发专业/2015应届毕业生</li>
-  <li>技术博客: <a href="http://blog.csdn.net/chn_liu">http://blog.csdn.net/chn_liu</a></li>
-  <li>Github: <a href="https://github.com/chn-lyzhi">https://github.com/chn-lyzhi</a></li>
-  <li>应聘职位: <strong>iOS 开发工程师</strong></li>
-</ul>
+<p>viewDidLoad方法中加上</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">self.collectionView.delegate = self;  
+self.collectionView.dataSource = self;
+</code></pre></div>
+<p>添加代理方法</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">-(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView {
+    return 1;
+}
 
-<h1 id="section-3">工作经历</h1>
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return [menuData count];
+}
 
-<ul>
-  <li>广东云度信息科技有限公司。任职 <strong>iOS 开发助理</strong>，自2014年11月至2015年7月</li>
-</ul>
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+//    UICollectionViewCell * cell = (UICollectionViewCell *)[collectionView dequeueReusableCellWithReuseIdentifier:@&quot;CollectionCell&quot; forIndexPath:indexPath];
 
-<h1 id="section-4">项目</h1>
+    XYZGGCollectionViewCell * cell = [collectionView dequeueReusableCellWithReuseIdentifier:@&quot;cell&quot; forIndexPath:indexPath];
 
-<h3 id="ios--app">iOS 平台运动社交 APP</h3>
+    cell.cellLabel.text = menuData[indexPath.row];
+    return cell;
+}
+</code></pre></div>
+<p>其中cell使用新类控制。
+创建<code>CollectionViewCell</code>类，继承自<code>UICollectionViewCell</code>，带xib。</p>
 
-<p>项目地址 <a href="http://www.pgyer.com/CvM1">http://www.pgyer.com/CvM1</a></p>
+<p>xib中设置cell视图。
+在自定义<code>CollectionViewCell</code>类中添加方法</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">-(instancetype)initWithFrame:(CGRect)frame {
+    self = [super initWithFrame:frame];
+    if (self)
+    {
+        // 初始化时加载collectionCell.xib文件
+        NSArray *arrayOfViews = [[NSBundle mainBundle] loadNibNamed:@&quot;XYZGGCollectionViewCell&quot; owner:self options:nil];
 
-<ul>
-  <li>使用 Mapkit 展示地图、绘制跑步路线，可以后台记录，绘制路线</li>
-  <li>使用 AFNetWorking 类库进行网络数据请求(get,post)</li>
-  <li>使用 CoreMotion 记录室内跑步计步</li>
-  <li>使用 CocoPods 管理第三方类库</li>
-  <li>使用 UIView Animation 及 POP 动画库制作交互动画</li>
-  <li>使用 ShareSDK 进行分享功能开发</li>
-  <li>使用 CoreData 存取跑步数据并按特定时间段展示数据以及使用 NSUserDefualt 类存储个人数据</li>
-  <li>使用 Instruments 测试 App，找到并解决一次内存泄漏问题</li>
-</ul>
-
-<!--项目总结：
--->
-
-<h1 id="section-5">自我评价</h1>
-<p>熟悉申请开发证书、打包 App、上传 App Stroe 过程。</p>
-
+        // 如果路径不存在，return nil
+        if (arrayOfViews.count &lt; 1)
+        {
+            return nil;
+        }
+        // 如果xib中view不属于UICollectionViewCell类，return nil
+        if (![[arrayOfViews objectAtIndex:0] isKindOfClass:[UICollectionViewCell class]])
+        {
+            return nil;
+        }
+        // 加载nib
+        self = [arrayOfViews objectAtIndex:0];
+    }
+    return self;
+}
+</code></pre></div>
+<p>在使用collectionViewcontroller中的viewDidLoad中添加</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">[self.collectionView registerClass:[XYZGGCollectionViewCell class] forCellWithReuseIdentifier:@&quot;cell&quot;];
+</code></pre></div>
   </article>
 
 </div>
@@ -160,7 +168,7 @@
       </div>
 
       <div class="footer-col  footer-col-3">
-        <p class="text">个人博客
+        <p class="text">闻道有先后
 </p>
       </div>
     </div>

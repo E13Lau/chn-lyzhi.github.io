@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>About</title>
-  <meta name="description" content="个人博客
-">
+  <title>iOS 开发-AVSpeechSynthesizer与AVSpeechUtterance使用简单记录</title>
+  <meta name="description" content="首先#import &lt;AVFoundation/AVFoundation.h&gt;">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://yourdomain.com/about/">
+  <link rel="canonical" href="http://yourdomain.com/jekyll/update/2014/12/23/iOS%20%E5%BC%80%E5%8F%91-AVSpeechSynthesizer%E4%B8%8EAVSpeechUtterance%E4%BD%BF%E7%94%A8%E7%AE%80%E5%8D%95%E8%AE%B0%E5%BD%95.html">
   <link rel="alternate" type="application/rss+xml" title="非生物" href="http://yourdomain.com/feed.xml" />
 </head>
 
@@ -36,21 +35,19 @@
       <div class="trigger">
         
           
-          <a class="page-link" href="/about/">About</a>
+          <a class="page-link" href="/关于/">关于</a>
           
         
           
         
           
         
-          
-        
-          
-          <a class="page-link" href="/简历/">简历</a>
           
         
           
           <a class="page-link" href="/项目/">项目</a>
+          
+        
           
         
       </div>
@@ -66,16 +63,53 @@
         <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">About</h1>
+    <h1 class="post-title">iOS 开发-AVSpeechSynthesizer与AVSpeechUtterance使用简单记录</h1>
+    <p class="post-meta">Dec 23, 2014</p>
   </header>
 
   <article class="post-content">
-    <p>This is the base Jekyll theme. You can find out more info about customizing your Jekyll theme, as well as basic Jekyll usage documentation at <a href="http://jekyllrb.com/">jekyllrb.com</a></p>
+    <p>首先
+<code>#import &lt;AVFoundation/AVFoundation.h&gt;</code></p>
 
-<p>You can find the source code for the Jekyll new theme at: <a href="https://github.com/jglovier/jekyll-new">github.com/jglovier/jekyll-new</a></p>
+<p>于viewDidLoad中初始化</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">- (void)viewDidLoad {
+    [super viewDidLoad];
+    av = [[AVSpeechSynthesizer alloc]init];
+    aaa = [[AVSpeechUtterance alloc]init];
 
-<p>You can find the source code for Jekyll at <a href="https://github.com/jekyll/jekyll">github.com/jekyll/jekyll</a></p>
+    // Do any additional setup after loading the view.
 
+}
+</code></pre></div>
+<p>实现方法</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">- (IBAction)Abtn:(id)sender {
+    NSString * astring = self.AField.text;
+    aaa = [AVSpeechUtterance speechUtteranceWithString:astring];
+    aaa.voice = [AVSpeechSynthesisVoice voiceWithLanguage:@&quot;zh-CH&quot;];  //语言
+    aaa.rate = 0.2;     //语速
+    [av speakUtterance:aaa];
+}
+
+-(IBAction)backgroundTap:(id)sender {
+    [self.AField resignFirstResponder];
+}
+
+- (IBAction)yueyu:(id)sender {
+    [self seapkstring:@&quot;zh-HK&quot;];
+}
+
+- (IBAction)guoyu:(id)sender {
+    [self seapkstring:@&quot;zh-CH&quot;];
+}
+
+-(void)seapkstring:(NSString *)language {
+    NSString * astring = self.AField.text;
+    aaa = [AVSpeechUtterance speechUtteranceWithString:astring];
+    aaa.voice = [AVSpeechSynthesisVoice voiceWithLanguage:language];  //语言
+    aaa.rate = 0.2;     //语速
+    [av speakUtterance:aaa];
+}
+</code></pre></div>
   </article>
 
 </div>
@@ -118,7 +152,7 @@
       </div>
 
       <div class="footer-col  footer-col-3">
-        <p class="text">个人博客
+        <p class="text">闻道有先后
 </p>
       </div>
     </div>

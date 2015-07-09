@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>iOS 开发－Checklists-App-todolist</title>
+  <meta name="description" content="SUMMARY:该界⾯面需要被重新命名为Edit ItemSUMMARY:简单美化SUMMARY:当触碰”+“添加按钮的时候往列表中添加⼀一个伪项⺫⽬目SUMMARY:当⽤用户更改代办事项时(如添加⼀一个新项⺫⽬目,开启/关闭勾选标志等),将待办事项保存到⽂文件 中。SUMMARY:创建⼀一个新的界⾯面,可以让⽤...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://yourdomain.com/jekyll/update/2014/05/19/iOS%20%E5%BC%80%E5%8F%91%EF%BC%8DChecklists-App-todolist.html">
+  <link rel="alternate" type="application/rss+xml" title="非生物" href="http://yourdomain.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">非生物</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/关于/">关于</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <a class="page-link" href="/项目/">项目</a>
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">iOS 开发－Checklists-App-todolist</h1>
+    <p class="post-meta">May 19, 2014</p>
+  </header>
+
+  <article class="post-content">
+    <ul>
+<li>SUMMARY:该界⾯面需要被重新命名为Edit Item</li>
+<li>SUMMARY:简单美化</li>
+<li>SUMMARY:当触碰”+“添加按钮的时候往列表中添加⼀一个伪项⺫⽬目</li>
+<li>SUMMARY:当⽤用户更改代办事项时(如添加⼀一个新项⺫⽬目,开启/关闭勾选标志等),将待办事项保存到⽂文件 中。</li>
+<li>SUMMARY:创建⼀一个新的界⾯面,可以让⽤用户添加/编辑代办事务清单</li>
+<li>SUMMARY:添加⼀一个⽂文本输⼊入框,让⽤用户可以使⽤用内置键盘来输⼊入信息</li>
+<li>SUMMARY:在主界⾯面的表视图中添加新创建的ChecklistItem对象</li>
+<li>SUMMARY:将所有的代办事务清单保存在⽂文件中,然后在需要的时候从该⽂文件中加载。</li>
+<li>SUMMARY:当触碰代办事务清单列表中的某⼀一项时,会显⽰示该清单所属的所有代办事项</li>
+<li>SUMMARY:当应⽤用重新启动时从该⽂文件加载代办事项清单。</li>
+<li>SUMMARY:添加⼀一个navigation controller</li>
+<li>SUMMARY:借⽤用storyboarding的⼒力量来创建⼀一个Add Item界⾯面</li>
+<li>SUMMARY:当⽤用户触碰back按钮返回主界⾯面的时候,我们需要从NSUserDefaults设置中删除刚才所保存的数 值。通常情况下,</li>
+<li> 当我们将某个数值设置为,就意味着“没有数值”。为神⻢马是-1?因为我们在计 算⾏行编号的时候是从0开始的,因此总是会使⽤用0或者任何⼀一个整</li>
+<li> 数。-1不是⼀一个有效的⾏行编号,⽽而 因为它是⼀一个负值,所以就很容易在debug的过程中观察到可能出现的情况。</li>
+<li>SUMMARY:根据某个特定的顺序对其中的项⺫⽬目进⾏行排序。这⾥里我 们将根据事项名称对列表进⾏行排序。</li>
+<li>SUMMARY:我们需要给它提供⼀一个已有的checklistItem对象</li>
+<li>SUMMARY:我们需要在⽂文本域中显⽰示现有项⺫目的⽂文本内容</li>
+<li>SUMMARY:给checklist添加图标</li>
+<li>SUMMARY:在导航栏上⾯面放⼀一个“+”添加按钮</li>
+<li>SUMMARY:使⽤用⽂文本输⼊入框⾥里⾯面所输入的⽂文本来创建⼀一个新的ChecklistItem</li>
+<li>SUMMARY:添加启动界面</li>
+<li>SUMMARY:判断何时⽤用户触碰Add Item界⾯面上的Cancel或Done按钮</li>
+<li>SUMMARY:当⽤用户触碰done的时候,更新现有项⺫⽬目的内容,⽽而不是添加⼀一个新的项⺫⽬目。</li>
+<li>SUMMARY:为了让代办事务清单中的事项可以持久保存,判断该把保存这些信息的⽂文件放到⽂文件系统的何 处。</li>
+<li>SUMMARY:在从主界⾯面(AllListsViewController)到checklist界⾯面(ChecklistViewControl</li>
+<li> ler)的segue上,我们 需要编写代码将选中的checklist的⾏行编号保存到NSUserDefaults中。这样我们就可以让应⽤用记住用户所选择的checklist了。当然,或许你觉得保存checklist的名称⽐比⾏行编号更⼈人性化。不过想想⼀一种 可能,如果两个checklists的名称相同肿么办?虽然这种情况⽐比较罕⻅见,不过⽤用户不是完全例理性 的,总有这种可能会出现。因此使⽤用⾏行编号就可以确保应⽤用总是会选择正确的checlist</li>
+<li>SUMMARY:当应⽤用启动时如果NSUserDefaults中保存的数值不是-1,那么我们就知道⽤用户之前在查看checklist 中的内容 ,此时就可以⼿手动执⾏行segue切换到对应⾏行的ChecklistViewController&gt;</li>
+<li>SUMMARY:可以在主界⾯面上显⽰示每个checklist⾥里⾯面还有多少代办事项没有完成。</li>
+<li>SUMMARY:创建⼀一个新的界⾯面,⽤用于显⽰示所有的代办事务清单</li>
+<li>SUMMARY:用到NSUserDefaults来记录相关信息,判断⽤用户是否是⾸首次打 开应⽤用。如果是,就创建⼀一个新的Checklist对象</li>
+<li>SUMMARY:允许⽤用户触碰某⼀一⾏行来打开或关闭选中标志。</li>
+<li>SUMMARY:使⽤用swipe-to-delete(滑动删除)的⽅方式来删除已有项⺫⽬目</li>
+<li>SUMMARY:在应⽤用的界⾯面上放置⼀一个表视图</li>
+<li>SUMMARY:打开Add Item界⾯面让⽤用户输⼊入项⺫⽬目的⽂文字描述。</li>
+<li>SUMMARY:在表视图⾥里⾯面填充数据</li>
+</ul>
+
+<p><strong><em>循序为倒序</em></strong></p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">非生物</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>非生物</li>
+          <li><a href="mailto:"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/chn-lyzhi">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">chn-lyzhi</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">闻道有先后
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

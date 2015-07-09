@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>iOS－创建依赖组件的pickerView</title>
+  <meta name="description" content="-(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {    return 3;}">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://yourdomain.com/jekyll/update/2015/01/19/iOS%EF%BC%8D%E5%88%9B%E5%BB%BA%E4%BE%9D%E8%B5%96%E7%BB%84%E4%BB%B6%E7%9A%84pickerView.html">
+  <link rel="alternate" type="application/rss+xml" title="非生物" href="http://yourdomain.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">非生物</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/关于/">关于</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <a class="page-link" href="/项目/">项目</a>
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">iOS－创建依赖组件的pickerView</h1>
+    <p class="post-meta">Jan 19, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <div class="highlight"><pre><code class="language-text" data-lang="text">-(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+    return 3;
+}
+
+-(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+    if (component == 0) {
+
+        return bigArray.count;
+    }
+    if (component == 1) {
+        componentIndex = [self.pickerView selectedRowInComponent:0];
+
+        return [bigArray[componentIndex][1] count];
+    }
+    if (component == 2) {
+        return time.count;
+    }
+    return  0;
+}
+
+-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    NSString * string = @&quot;无数据&quot;;
+
+    if (component == 0) {
+        return bigArray[row][0];
+    }
+    if (component == 1) {
+        NSString * powerString = [bigArray[componentIndex][1][row] objectForKey:@&quot;power&quot;];
+            return powerString;
+    }
+    if (component == 2) {
+        return time[row];
+    }else {
+        return string;
+    }
+}
+
+-(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    if (component == 0) {
+        [self.pickerView reloadComponent:1];
+         //更新第二组pickerView
+    }
+    if (component == 1) {
+        b = [[bigArray[componentIndex][1][row] objectForKey:@&quot;K&quot;] floatValue];
+    }
+    if (component == 2) {
+        c = [time[row] floatValue]*60;
+    }
+
+    [self.textField resignFirstResponder];
+}
+</code></pre></div>
+<p>其中<code>componentIndex</code>为一个<code>NSInteger  componentIndex</code>变量。</p>
+
+<p>用于保存第一组所选择的下标，根据这个下标更新第二组的数量和数组。
+如果不用单独的变量保存，则会因为第二组的更新不及时，其数据溢出而报错。</p>
+
+<p>下面为m文件完整代码：</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">//
+//  CalorieViewController.m
+//  ISport
+//
+//  Created by command.Zi on 15/1/9.
+//  Copyright (c) 2015年 yundu. All rights reserved.
+//
+
+#import &quot;CalorieViewController.h&quot;
+
+@interface CalorieViewController () {
+    NSMutableArray * projectName;
+    NSMutableArray * power;
+    NSMutableArray * time;
+    NSMutableArray * bigArray;
+    float b;
+    float c;
+    NSInteger  componentIndex;
+
+}
+
+- (IBAction)disMissButton:(id)sender;
+
+@property (strong, nonatomic) IBOutlet UIPickerView *pickerView;
+@property (strong, nonatomic) IBOutlet UITextField *textField;
+@property (strong, nonatomic) IBOutlet UILabel *calLabel;
+- (IBAction)getButton:(id)sender;
+
+@end
+
+@implementation CalorieViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    projectName = [[NSMutableArray alloc]init];
+    power = [[NSMutableArray alloc]init];
+    time = [[NSMutableArray alloc]init];
+    [time addObject:@&quot;0.5小时&quot;];
+    for (int i = 1; i&lt;9; i++) {
+        NSString * string = [NSString stringWithFormat:@&quot;%d小时&quot;,i];
+        [time addObject:string];
+    }
+
+    NSString *filePath=[[NSBundle mainBundle] pathForResource:@&quot;Ca&quot; ofType:@&quot;plist&quot;];
+    bigArray = [[NSMutableArray alloc]initWithContentsOfFile:filePath];
+//    NSLog(@&quot;%@&quot;,bigArray);
+
+    self.pickerView.delegate = self;
+    self.pickerView.dataSource = self;
+
+    b = 0.1564;
+    c = 0.5*60;
+    // Do any additional setup after loading the view from its nib.
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+-(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+    return 3;
+}
+
+-(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+    if (component == 0) {
+
+        return bigArray.count;
+    }
+    if (component == 1) {
+        componentIndex = [self.pickerView selectedRowInComponent:0];
+
+        return [bigArray[componentIndex][1] count];
+    }
+    if (component == 2) {
+        return time.count;
+    }
+    return  0;
+}
+
+-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    NSString * string = @&quot;无数据&quot;;
+
+    if (component == 0) {
+        return bigArray[row][0];
+    }
+    if (component == 1) {
+        NSString * powerString = [bigArray[componentIndex][1][row] objectForKey:@&quot;power&quot;];
+            return powerString;
+    }
+    if (component == 2) {
+        return time[row];
+    }else {
+        return string;
+    }
+}
+
+-(void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    if (component == 0) {
+        [self.pickerView reloadComponent:1];
+         //更新第二组pickerView
+    }
+    if (component == 1) {
+        b = [[bigArray[componentIndex][1][row] objectForKey:@&quot;K&quot;] floatValue];
+    }
+    if (component == 2) {
+        c = [time[row] floatValue]*60;
+    }
+
+    [self.textField resignFirstResponder];
+}
+
+-(NSString *)getCalorie {
+    if (!self.textField) {
+        return nil;
+    }else {
+        float A = [self.textField.text floatValue];
+        float cal = A*b*c;
+        self.calLabel.text = [NSString stringWithFormat:@&quot;%f&quot;,cal];
+    }
+
+    return @&quot;d&quot;;
+}
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+-(IBAction)backgroundTap:(id)sender {
+    [self.textField resignFirstResponder];
+}
+
+- (IBAction)disMissButton:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (IBAction)getButton:(id)sender {
+    [self.textField resignFirstResponder];
+    [self getCalorie];
+}
+
+@end
+</code></pre></div>
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">非生物</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>非生物</li>
+          <li><a href="mailto:"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/chn-lyzhi">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">chn-lyzhi</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">闻道有先后
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>iOS 开发-开发碎碎念</title>
+  <meta name="description" content="模版化开发，使用不用的xib来显示对应的界面，来实现多个模版用一个软件可不可行？UIImage图片缩放">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://yourdomain.com/jekyll/update/2015/06/26/iOS%20%E5%BC%80%E5%8F%91-%E5%BC%80%E5%8F%91%E7%A2%8E%E7%A2%8E%E5%BF%B5.html">
+  <link rel="alternate" type="application/rss+xml" title="非生物" href="http://yourdomain.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">非生物</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/关于/">关于</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <a class="page-link" href="/项目/">项目</a>
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">iOS 开发-开发碎碎念</h1>
+    <p class="post-meta">Jun 26, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p><code>模版化开发，使用不用的xib来显示对应的界面，来实现多个模版用一个软件可不可行？</code>
+</br>
+</br></p>
+
+<h4>UIImage图片缩放</h4>
+<div class="highlight"><pre><code class="language-text" data-lang="text">- (UIImage *)scaleImage:(UIImage *)image toScale:(float)scaleSize
+{
+    UIGraphicsBeginImageContext(CGSizeMake(image.size.width * scaleSize, image.size.height * scaleSize));
+    [image drawInRect:CGRectMake(0, 0, image.size.width * scaleSize, image.size.height * scaleSize)];
+    UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return scaledImage;
+}
+</code></pre></div>
+<p></br>
+</br></p>
+
+<h4>把一个View加到Window上显示为全屏</h4>
+<div class="highlight"><pre><code class="language-text" data-lang="text">NSEnumerator *frontToBackWindows = [UIApplication.sharedApplication.windows reverseObjectEnumerator];
+        for (UIWindow *window in frontToBackWindows){
+            BOOL windowOnMainScreen = window.screen == UIScreen.mainScreen;
+            BOOL windowIsVisible = !window.hidden &amp;&amp; window.alpha &gt; 0;
+            BOOL windowLevelNormal = window.windowLevel == UIWindowLevelNormal; 
+            if (windowOnMainScreen &amp;&amp; windowIsVisible &amp;&amp; windowLevelNormal) {
+                [window addSubview:self.overlayView];
+                break;
+            }
+        }
+</code></pre></div>
+<p></br>
+其中UIApplication.sharedApplication.windows 获取app中所有windows 
+reverseObjectEnumerator 为反向出入数组
+</br></p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">BOOL windowOnMainScreen = window.screen == UIScreen.mainScreen;
+BOOL windowIsVisible = !window.hidden &amp;&amp; window.alpha &gt; 0;
+BOOL windowLevelNormal = window.windowLevel == UIWindowLevelNormal;
+</code></pre></div>
+<p></br>
+<code>if (windowOnMainScreen &amp;&amp; windowIsVisible &amp;&amp; windowLevelNormal)</code>
+这段是为了找到最前面的window？
+</br>
+</br></p>
+
+<h4>GitHub 简单使用</h4>
+
+<p>到https://github.com/ 建立一个库
+并勾选 Initialize this repository with a README 选项
+打开 SourceTree 添加远程仓库
+选择从URL克隆
+填入仓库地址并选择一个空文件夹
+把文件复制到该空文件夹
+于 SourceTree 中打开，先拉取 再提交推送
+</br>
+</br></p>
+
+<p><code>AudioUnit 频谱分析</code>
+</br>
+UICollectionView 默认当cell数量少时不能滑动，
+添加：
+<code>collectionView.alwaysBounceVertical = YES;</code>
+即可。用于 CollectionView 下拉刷新
+</br>
+</br>
+添加一个 SakuraScrollView 于页面中，当push进一个页面再返回，SakuraScrollView的bounds被修改成－64，原因未知。
+http://unremittingly.iteye.com/blog/2031626
+添加一个View在 SakuraScrollView 前
+<code>
+    UIView *firstSubView = [[UIView alloc] initWithFrame:self.bounds];
+    [self addSubview:firstSubView];
+</code>
+问题解决。
+</br>
+</br>
+遇到一个奇怪的问题，无论从 Finder 进入 Time Machine 的文件夹提示没有权限，点选菜单栏中的 进入 Time Machine 则显示暂时无法连接 Time Machine。后台发现它仍然在后台进行备份操作。我尝试使用终端进入 Time Machine 的文件夹成功，随意复制一个文件出来， Time Machine 恢复正常。（终端进入带有空格文件夹名称的需要使用&#39;\&#39; $cd my\ files）
+</br>
+</br>
+绘制渐变颜色线条关键词<code>cgcontextdrawlineargradient</code>
+</br>
+</br></p>
+
+<h4>在注册Cell和补充视图时，也可以用新建xib文件的方式：</h4>
+<div class="highlight"><pre><code class="language-text" data-lang="text">[self.myCollectionView registerNib:[UINib nibWithNibName:@&quot;MyCollectionCell&quot; bundle:nil] forCellWithReuseIdentifier:@&quot;hxwCell&quot;];
+
+[self.myCollectionView registerNib:[UINib nibWithNibName:@&quot;MySupplementaryView&quot; bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@&quot;hxwHeader&quot;];
+
+[self.myCollectionView registerNib:[UINib nibWithNibName:@&quot;MySupplementaryView&quot; bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionFooter withReuseIdentifier:@&quot;hxwFooter&quot;];
+</code></pre></div>
+<p>用这种方式注册后，甚至可以不用新建类去绑定这个xib，直接通过viewWithTag的方式获取xib里的控件：</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">UICollectionReusableView *view =  [collectionView dequeueReusableSupplementaryViewOfKind :kind withReuseIdentifier:@&quot;hxwHeader&quot; forIndexPath:indexPath];
+UILabel *label = (UILabel *)[view viewWithTag:1];
+label.text = @&quot;empty&quot;;
+</code></pre></div>
+<p></br>
+</br></p>
+
+<h4>富文本</h4>
+
+<p>NSForegroundColorAttributeName字体颜色
+NSKernAttributeName字间距</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">NSMutableAttributedString * myString = [[NSMutableAttributedString alloc]initWithString:dct[M_NavName]];
+[myString addAttribute:NSForegroundColorAttributeName value:[UIColor whiteColor] range:NSMakeRange(0, 1)];
+[myString addAttribute:NSKernAttributeName value:[NSNumber numberWithFloat:4] range:NSMakeRange(0, 1)];
+cell.titleLabel.attributedText = myString;
+</code></pre></div>
+<p>参考：<a href="http://zhuhaibobb.blog.163.com/blog/static/2744006720138121749443/">富文本以及自定字间距和行间距</a>
+</br>
+</br></p>
+
+<h4>设置UIButton上字体的对齐方式，不是用：</h4>
+
+<p><code>[payWayButton.titleLabel setTextAlignment:UITextAlignmentCenter];</code>
+也不是
+<code>[payWayButton.titleLabel.titleLabel setTextAlignment:UITextAlignmentCenter];</code>
+ 而是用：
+<code>[payWayButton setContentHorizontalAlignment:UIControlContentHorizontalAlignmentCenter];</code>
+titleLabel 是 Button 上的一个控件，设置 label 的对齐方式并不能让label 置于 button 的左边。
+</br>
+</br></p>
+
+<h4>使用 git 的分支功能实现不同风格 View 集合。</h4>
+
+<p><img src="/assets/20150626183640212.png" alt="git">
+</br>
+</br>
+Gradle 是以 Groovy 语言为基础，面向Java应用为主。基于DSL（领域特定语言）语法的自动化构建工具。</p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">非生物</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>非生物</li>
+          <li><a href="mailto:"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/chn-lyzhi">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">chn-lyzhi</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">闻道有先后
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>

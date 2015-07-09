@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>iOS 开发-版面实现记录四</title>
+  <meta name="description" content="">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://yourdomain.com/jekyll/update/2015/06/05/iOS%20%E5%BC%80%E5%8F%91-%E7%89%88%E9%9D%A2%E5%AE%9E%E7%8E%B0%E8%AE%B0%E5%BD%95%E5%9B%9B.html">
+  <link rel="alternate" type="application/rss+xml" title="非生物" href="http://yourdomain.com/feed.xml" />
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">非生物</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/关于/">关于</a>
+          
+        
+          
+        
+          
+        
+          
+        
+          
+          <a class="page-link" href="/项目/">项目</a>
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">iOS 开发-版面实现记录四</h1>
+    <p class="post-meta">Jun 5, 2015</p>
+  </header>
+
+  <article class="post-content">
+    <p><img src="/assets/20150605143331857.png" alt="截图"></p>
+
+<p>同样使用 UICollectionView 来实现，自定义一个 UICollectionViewLayout 即可。UICollectionView 可以看作是具备复用控件的 ScrollView。自定义则是通过某些算法得到每一个控件在 Content 上的位置，并设置它具备的形态。该 UICollectionViewLayout 中获取并返回一个自定义的 UICollectionViewLayoutAttributes。</p>
+
+<blockquote>
+<p>当UICollectionView在获取布局时将针对每一个indexPath的部件（包括cell，追加视图和装饰视图），向其上的UICollectionViewLayout实例询问该部件的布局信息（在这个层面上说的话，实现一个UICollectionViewLayout的时候，其实很像是zap一个delegate，之后的例子中会很明显地看出），这个布局信息，就以UICollectionViewLayoutAttributes的实例的方式给出。</p>
+</blockquote>
+
+<p>简单地说就是 CollectionView 找 UICollectionViewLayout 要布局信息。UICollectionViewLayout 就给出 UICollectionViewLayoutAttributes 的实例。
+继承UICollectionViewLayout类，然后重载下列方法：</p>
+
+<ul>
+<li><code>- (void)prepareLayout;</code> ｀首先，-(void)prepareLayout将被调用，默认下该方法什么没做，但是在自己的子类实现中，一般在该方法中设定一些必要的layout的结构和初始需要的参数等。｀</li>
+<li><code>- (CGSize)collectionViewContentSize;</code> 返回 UICollectionView 的 contentSize 
+<code>- (NSArray *)layoutAttributesForElementsInRect:(CGRect)rect;</code> 返回包括 cell 的 Attribute，SupplementaryView 和 DecorationView 的 Attribute 的数组。每个 Attribute 通过 representedElementCategory 属性来在数组中区分该 Attribute 是属于Cell 抑或是 supplementary view 或 decoration view。
+可以重载三种对应方法返回 Attribute </li>
+</ul>
+<div class="highlight"><pre><code class="language-text" data-lang="text">- (UICollectionViewLayoutAttributes *)layoutAttributesForItemAtIndexPath:(NSIndexPath *)indexPath;
+- (UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind atIndexPath:(NSIndexPath *)indexPath;
+- (UICollectionViewLayoutAttributes *)layoutAttributesForDecorationViewOfKind:(NSString*)elementKind atIndexPath:(NSIndexPath *)indexPath;
+</code></pre></div>
+<p>通过对应方法返回对应 Attribute</p>
+<div class="highlight"><pre><code class="language-text" data-lang="text">+ (instancetype)layoutAttributesForCellWithIndexPath:(NSIndexPath *)indexPath;
++ (instancetype)layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind withIndexPath:(NSIndexPath *)indexPath;
+(instancetype)layoutAttributesForDecorationViewOfKind:(NSString *)decorationViewKind withIndexPath:(NSIndexPath*)indexPath;
+</code></pre></div>
+<p></br>
+下面是一种实现</p>
+<div class="highlight"><pre><code class="language-Objective-C" data-lang="Objective-C"><span class="cp">#pragma mark - </span>
+<span class="c1">//</span>
+<span class="c1">//  JDCollectionViewLayout.m</span>
+<span class="c1">//  JasonCaoDemoProject</span>
+<span class="c1">//</span>
+<span class="c1">//  Created by 曹 景成 on 15/6/4.</span>
+<span class="c1">//  Copyright (c) 2015年 JasonCao. All rights reserved.</span>
+<span class="c1">//</span>
+<span class="k">@interface</span> <span class="nc">JDCollectionViewLayout</span> : <span class="bp">UICollectionViewLayout</span>
+
+<span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">,</span> <span class="k">assign</span><span class="p">)</span> <span class="bp">NSInteger</span> <span class="n">cellCount</span><span class="p">;</span>
+<span class="k">@property</span> <span class="p">(</span><span class="k">nonatomic</span><span class="p">)</span> <span class="bp">CGSize</span> <span class="n">headerReferenceSize</span><span class="p">;</span>
+
+<span class="k">@end</span>
+
+<span class="k">@implementation</span> <span class="nc">JDCollectionViewLayout</span>
+<span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">prepareLayout</span> <span class="p">{</span>
+    <span class="p">[</span><span class="nb">super</span> <span class="n">prepareLayout</span><span class="p">];</span>
+    <span class="n">_cellCount</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">self</span> <span class="n">collectionView</span><span class="p">]</span> <span class="nl">numberOfItemsInSection</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="bp">CGSize</span><span class="p">)</span><span class="nf">collectionViewContentSize</span> <span class="p">{</span>
+    <span class="bp">NSInteger</span> <span class="n">height</span> <span class="o">=</span> <span class="p">(</span><span class="n">_cellCount</span><span class="o">/</span><span class="mi">7</span> <span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="mi">262</span> <span class="o">+</span> <span class="nb">self</span><span class="p">.</span><span class="n">headerReferenceSize</span><span class="p">.</span><span class="n">height</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="n">CGRectGetWidth</span><span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">collectionView</span><span class="p">.</span><span class="n">frame</span><span class="p">),</span> <span class="n">height</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="p">-</span> <span class="p">(</span><span class="bp">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="p">)</span><span class="nf">layoutAttributesForItemAtIndexPath:</span><span class="p">(</span><span class="bp">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">path</span>
+<span class="p">{</span>
+    <span class="bp">UICollectionViewLayoutAttributes</span><span class="o">*</span> <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UICollectionViewLayoutAttributes</span> <span class="nl">layoutAttributesForCellWithIndexPath</span><span class="p">:</span><span class="n">path</span><span class="p">];</span>
+
+    <span class="c1">//每一小组起点(x, y)</span>
+    <span class="bp">NSInteger</span> <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">path</span><span class="p">.</span><span class="n">row</span><span class="o">/</span><span class="mi">7</span><span class="p">)</span><span class="o">*</span><span class="mi">262</span> <span class="o">+</span> <span class="nb">self</span><span class="p">.</span><span class="n">headerReferenceSize</span><span class="p">.</span><span class="n">height</span><span class="p">;</span>
+    <span class="bp">NSInteger</span> <span class="n">x</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+
+    <span class="c1">//每个cell在每个小组当中的位置</span>
+    <span class="bp">NSInteger</span> <span class="n">indexForSix</span> <span class="o">=</span> <span class="p">(</span><span class="n">path</span><span class="p">.</span><span class="n">row</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">7</span><span class="p">;</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">indexForSix</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span> <span class="n">indexForSix</span> <span class="o">==</span> <span class="mi">6</span><span class="p">){</span>
+        <span class="c1">//小组当中下方两个中等cell</span>
+        <span class="n">y</span> <span class="o">+=</span> <span class="mi">254</span><span class="o">*</span><span class="mf">0.4</span><span class="o">+</span><span class="mi">14</span><span class="p">;</span>
+        <span class="n">attributes</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">((</span><span class="n">IOS_SCREEN_WIDTH</span><span class="o">-</span><span class="mi">24</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">254</span><span class="o">*</span><span class="mf">0.6</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">indexForSix</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="n">x</span> <span class="o">=</span> <span class="n">IOS_SCREEN_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">4</span><span class="p">;</span>
+    <span class="p">}</span><span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">indexForSix</span> <span class="o">==</span> <span class="mi">1</span><span class="p">){</span>
+        <span class="c1">//每一小组第一个cell</span>
+        <span class="n">y</span> <span class="o">+=</span> <span class="mi">8</span><span class="p">;</span>   <span class="c1">//距离原点18点</span>
+        <span class="n">attributes</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">((</span><span class="n">IOS_SCREEN_WIDTH</span><span class="o">-</span><span class="mi">24</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="mi">254</span><span class="o">*</span><span class="mf">0.4</span><span class="p">);</span>
+    <span class="p">}</span><span class="k">else</span> <span class="p">{</span>
+        <span class="n">attributes</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">((((</span><span class="n">IOS_SCREEN_WIDTH</span><span class="o">-</span><span class="mi">24</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">254</span><span class="o">*</span><span class="mf">0.4</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">indexForSix</span> <span class="o">==</span> <span class="mi">2</span><span class="p">){</span>
+            <span class="n">y</span> <span class="o">+=</span> <span class="mi">8</span><span class="p">;</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">IOS_SCREEN_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">4</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">indexForSix</span> <span class="o">==</span> <span class="mi">3</span><span class="p">){</span>
+            <span class="n">y</span> <span class="o">+=</span> <span class="mi">8</span><span class="p">;</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">IOS_SCREEN_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="p">(((</span><span class="n">IOS_SCREEN_WIDTH</span><span class="o">-</span><span class="mi">24</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">12</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">indexForSix</span> <span class="o">==</span> <span class="mi">4</span><span class="p">){</span>
+            <span class="n">y</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">254</span><span class="o">*</span><span class="mf">0.4</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">16</span><span class="p">;</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">IOS_SCREEN_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">4</span><span class="p">;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span><span class="p">(</span><span class="n">indexForSix</span> <span class="o">==</span> <span class="mi">5</span><span class="p">){</span>
+            <span class="n">y</span> <span class="o">+=</span> <span class="p">(</span><span class="mi">254</span><span class="o">*</span><span class="mf">0.4</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">16</span><span class="p">;</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">IOS_SCREEN_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="p">(((</span><span class="n">IOS_SCREEN_WIDTH</span><span class="o">-</span><span class="mi">24</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span><span class="o">-</span><span class="mi">8</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="o">+</span><span class="mi">12</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">attributes</span><span class="p">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="n">attributes</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">width</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">y</span><span class="o">+</span><span class="n">attributes</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">attributes</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//使用 Reveal 查看 headerView 被加了8个，只有一个 View 包含 SaKuraScrollView</span>
+<span class="p">-</span> <span class="p">(</span><span class="bp">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="p">)</span><span class="nf">layoutAttributesForSupplementaryViewOfKind:</span><span class="p">(</span><span class="bp">NSString</span> <span class="o">*</span><span class="p">)</span><span class="nv">elementKind</span> <span class="nf">atIndexPath:</span><span class="p">(</span><span class="bp">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">indexPath</span> <span class="p">{</span>
+    <span class="bp">UICollectionViewLayoutAttributes</span> <span class="o">*</span><span class="n">headerAttributes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">UICollectionViewLayoutAttributes</span>
+                                                          <span class="nl">layoutAttributesForSupplementaryViewOfKind</span><span class="p">:</span><span class="n">elementKind</span>
+                                                          <span class="nl">withIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">];</span>
+    <span class="n">headerAttributes</span><span class="p">.</span><span class="n">size</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">headerReferenceSize</span><span class="p">;</span>
+    <span class="n">headerAttributes</span><span class="p">.</span><span class="n">center</span> <span class="o">=</span> <span class="n">CGPointMake</span><span class="p">(</span><span class="n">IOS_SCREEN_WIDTH</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">headerAttributes</span><span class="p">.</span><span class="n">size</span><span class="p">.</span><span class="n">height</span><span class="o">/</span><span class="mi">2</span><span class="p">);</span>
+    <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;header---%lu&quot;</span><span class="p">,(</span><span class="kt">unsigned</span> <span class="kt">long</span><span class="p">)</span><span class="n">headerAttributes</span><span class="p">.</span><span class="n">representedElementCategory</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">headerAttributes</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="p">-(</span><span class="bp">NSArray</span><span class="o">*</span><span class="p">)</span><span class="nf">layoutAttributesForElementsInRect:</span><span class="p">(</span><span class="bp">CGRect</span><span class="p">)</span><span class="nv">rect</span>
+<span class="p">{</span>
+    <span class="bp">NSMutableArray</span><span class="o">*</span> <span class="n">attributes</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSMutableArray</span> <span class="n">array</span><span class="p">];</span>
+    <span class="k">for</span> <span class="p">(</span><span class="bp">NSInteger</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span> <span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">self</span><span class="p">.</span><span class="n">cellCount</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="bp">NSIndexPath</span><span class="o">*</span> <span class="n">indexPath</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSIndexPath</span> <span class="nl">indexPathForItem</span><span class="p">:</span><span class="n">i</span> <span class="nl">inSection</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+        <span class="p">[</span><span class="n">attributes</span> <span class="nl">addObject</span><span class="p">:[</span><span class="nb">self</span> <span class="nl">layoutAttributesForItemAtIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">]];</span>
+    <span class="p">}</span>
+    <span class="bp">NSIndexPath</span><span class="o">*</span> <span class="n">indexPath</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSIndexPath</span> <span class="nl">indexPathForItem</span><span class="p">:</span><span class="mi">0</span> <span class="nl">inSection</span><span class="p">:</span><span class="mi">0</span><span class="p">];</span>
+    <span class="p">[</span><span class="n">attributes</span> <span class="nl">addObject</span><span class="p">:[</span><span class="nb">self</span> <span class="nl">layoutAttributesForSupplementaryViewOfKind</span><span class="p">:</span><span class="s">@&quot;header&quot;</span> <span class="nl">atIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">]];</span>
+    <span class="k">return</span> <span class="n">attributes</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">@end</span>
+</code></pre></div>
+<p>使用如下</p>
+<div class="highlight"><pre><code class="language-Objective-C" data-lang="Objective-C"><span class="p">-</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span><span class="nf">initContentCollectionView</span> <span class="p">{</span>
+    <span class="n">JDCollectionViewLayout</span> <span class="o">*</span><span class="n">layout</span> <span class="o">=</span> <span class="p">[[</span><span class="n">JDCollectionViewLayout</span> <span class="n">alloc</span><span class="p">]</span> <span class="n">init</span><span class="p">];</span>
+    <span class="n">layout</span><span class="p">.</span><span class="n">headerReferenceSize</span> <span class="o">=</span> <span class="n">CGSizeMake</span><span class="p">(</span><span class="n">IOS_SCREEN_WIDTH</span><span class="p">,</span> <span class="mi">200</span><span class="p">);</span>
+
+   <span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span> <span class="o">=</span> <span class="p">[[</span><span class="bp">UICollectionView</span> <span class="n">alloc</span><span class="p">]</span> <span class="nl">initWithFrame</span><span class="p">:</span><span class="n">CGRectMake</span><span class="p">(</span><span class="mi">0</span> <span class="p">,</span><span class="mf">64.f</span> <span class="p">,</span> <span class="n">IOS_SCREEN_WIDTH</span><span class="p">,</span> <span class="n">IOS_SCREEN_CONTENT_HEIGHT</span> <span class="o">-</span> <span class="n">BOTTOM_MENU_BAR_HEIGHT</span><span class="p">)</span> <span class="nl">collectionViewLayout</span><span class="p">:</span><span class="n">layout</span><span class="p">];</span>
+    <span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span><span class="p">.</span><span class="n">backgroundColor</span> <span class="o">=</span> <span class="n">LIGHT_GRAY</span><span class="p">;</span>
+    <span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span><span class="p">.</span><span class="n">delegate</span> <span class="o">=</span> <span class="nb">self</span><span class="p">;</span>
+    <span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span><span class="p">.</span><span class="n">dataSource</span> <span class="o">=</span> <span class="nb">self</span><span class="p">;</span>
+    <span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span><span class="p">.</span><span class="n">showsVerticalScrollIndicator</span> <span class="o">=</span> <span class="nb">NO</span><span class="p">;</span>
+    <span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span><span class="p">.</span><span class="n">alwaysBounceVertical</span> <span class="o">=</span> <span class="nb">YES</span><span class="p">;</span>
+    <span class="c1">//collectionView（上、左、下、右）</span>
+    <span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span><span class="p">.</span><span class="n">contentInset</span> <span class="o">=</span> <span class="n">COLLECTIONCONTENTINSET</span><span class="p">;</span>
+    <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span> <span class="nl">registerClass</span><span class="p">:[</span><span class="n">ViewHomeMenuCollectionCell</span> <span class="k">class</span><span class="p">]</span> <span class="nl">forCellWithReuseIdentifier</span><span class="p">:</span><span class="s">@&quot;cell&quot;</span><span class="p">];</span>
+    <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span> <span class="nl">registerClass</span><span class="p">:[</span><span class="n">ViewHomeMenuCollectionCellMedium</span> <span class="k">class</span><span class="p">]</span> <span class="nl">forCellWithReuseIdentifier</span><span class="p">:</span><span class="s">@&quot;mediumCell&quot;</span><span class="p">];</span>
+    <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span> <span class="nl">registerClass</span><span class="p">:[</span><span class="n">ViewHomeMenuCollectionCellSmall</span> <span class="k">class</span><span class="p">]</span> <span class="nl">forCellWithReuseIdentifier</span><span class="p">:</span><span class="s">@&quot;smallCell&quot;</span><span class="p">];</span>
+    <span class="p">[</span><span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span> <span class="nl">registerClass</span><span class="p">:[</span><span class="bp">UICollectionReusableView</span> <span class="k">class</span><span class="p">]</span> <span class="nl">forSupplementaryViewOfKind</span><span class="p">:</span><span class="n">UICollectionElementKindSectionHeader</span> <span class="nl">withReuseIdentifier</span><span class="p">:</span><span class="s">@&quot;headAdView&quot;</span><span class="p">];</span>
+    <span class="p">[</span><span class="nb">self</span> <span class="nl">addSubview</span><span class="p">:</span><span class="nb">self</span><span class="p">.</span><span class="n">contentCollectionView</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>另外还有类似的第三方库
+<a href="https://github.com/TopicSo/RAMCollectionViewFlemishBondLayout">RAMCollectionViewFlemishBondLayout</a></p>
+
+<p>对 RAMCollectionViewFlemishBondLayout 库其中一段计算 Cell 的原点Y值代码注释记录</p>
+<div class="highlight"><pre><code class="language-Objective-C" data-lang="Objective-C"><span class="c1">//获取每一个cell的原点Y值</span>
+<span class="p">-</span> <span class="p">(</span><span class="n">CGFloat</span><span class="p">)</span><span class="nf">getYAtIndexPath:</span><span class="p">(</span><span class="bp">NSIndexPath</span> <span class="o">*</span><span class="p">)</span><span class="nv">indexPath</span>
+<span class="p">{</span>
+    <span class="bp">NSInteger</span> <span class="n">currentGroup</span> <span class="o">=</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">currentGroupAtIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">];</span>
+    <span class="n">CGFloat</span> <span class="n">yValue</span> <span class="o">=</span> <span class="mf">0.0f</span><span class="p">;</span>
+    <span class="bp">NSIndexPath</span> <span class="o">*</span><span class="n">indexPathFirstElementCurrentSection</span> <span class="o">=</span> <span class="p">[</span><span class="bp">NSIndexPath</span> <span class="nl">indexPathForRow</span><span class="p">:</span><span class="mi">0</span> <span class="nl">inSection</span><span class="p">:</span><span class="n">indexPath</span><span class="p">.</span><span class="n">section</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">([</span><span class="nb">self</span> <span class="nl">isHighLightedElementAtIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">])</span> <span class="p">{</span>
+        <span class="c1">//判断是否是 highLight ,计算得到 y 值</span>
+        <span class="n">yValue</span> <span class="o">=</span> <span class="p">(</span><span class="n">currentGroup</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nb">self</span><span class="p">.</span><span class="n">highlightedCellHeight</span> <span class="o">+</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">heightHeaderAtIndexPath</span><span class="p">:</span><span class="n">indexPathFirstElementCurrentSection</span><span class="p">];</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">//这里需要加判断是否为下方两个中等cell？</span>
+        <span class="c1">//不是 highLight</span>
+        <span class="bp">NSInteger</span> <span class="n">position</span><span class="p">;</span>
+        <span class="c1">//numberOfElements 为每一个小组的数量</span>
+        <span class="c1">//这里的思路是仅仅用算法计算每一个Cell的frame，按规律放到CollecitonView的Content上</span>
+        <span class="c1">//使用CollectionView而非ScrollView为了更好地实现复用</span>
+        <span class="c1">//</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">indexPath</span><span class="p">.</span><span class="n">row</span> <span class="o">&lt;=</span> <span class="nb">self</span><span class="p">.</span><span class="n">numberOfElements</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//这里得到第一小组的小cell的位置position</span>
+            <span class="c1">//从 position = (indexPath.row - 1); 修改为</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="n">indexPath</span><span class="p">.</span><span class="n">row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span><span class="p">;</span>
+            <span class="c1">//还需要算出positionX的位置</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="c1">//第二小组及以后</span>
+            <span class="bp">NSInteger</span> <span class="n">maxElement</span> <span class="o">=</span> <span class="nb">self</span><span class="p">.</span><span class="n">numberOfElements</span> <span class="o">*</span> <span class="n">currentGroup</span><span class="p">;</span>
+            <span class="c1">//(maxElement - self.numberOfElements)可以算得每一个小组highLight的下标</span>
+            <span class="n">position</span> <span class="o">=</span> <span class="p">(</span><span class="n">indexPath</span><span class="p">.</span><span class="n">row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="p">(</span><span class="n">maxElement</span> <span class="o">-</span> <span class="nb">self</span><span class="p">.</span><span class="n">numberOfElements</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">position</span> <span class="o">==</span> <span class="mi">6</span> <span class="o">&amp;&amp;</span> <span class="n">position</span> <span class="o">==</span> <span class="mi">7</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//            yValue = ((currentGroup - 1) * self.highlightedCellHeight) +</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">yValue</span> <span class="o">=</span> <span class="p">((</span><span class="n">currentGroup</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="nb">self</span><span class="p">.</span><span class="n">highlightedCellHeight</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">cellHeight</span> <span class="o">*</span> <span class="n">position</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">heightHeaderAtIndexPath</span><span class="p">:</span><span class="n">indexPathFirstElementCurrentSection</span><span class="p">];</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">indexPath</span><span class="p">.</span><span class="n">section</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">yValue</span> <span class="o">+=</span> <span class="p">(</span><span class="nb">self</span><span class="p">.</span><span class="n">highlightedCellHeight</span> <span class="o">*</span> <span class="n">indexPath</span><span class="p">.</span><span class="n">section</span> <span class="o">*</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">totalGroupsAtIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">])</span> <span class="o">+</span> <span class="p">[</span><span class="nb">self</span> <span class="nl">headerAndFooterHeightsPreviouslyAtIndexPath</span><span class="p">:</span><span class="n">indexPath</span><span class="p">];</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">yValue</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>参考：
+<a href="https://developer.apple.com/library/prerelease/ios/documentation/UIKit/Reference/UICollectionViewLayoutAttributes_class/index.html#//apple_ref/doc/c_ref/UICollectionElementCategory">UICollectionViewLayoutAttributes Class Reference</a>
+<a href="http://blog.csdn.net/lmbda/article/details/18051801">UICollectionView之自定义布局</a>
+<a href="http://blog.csdn.net/eqera/article/details/8134986">iOS6新特征：UICollectionView介绍</a></p>
+
+  </article>
+
+</div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">非生物</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col  footer-col-1">
+        <ul class="contact-list">
+          <li>非生物</li>
+          <li><a href="mailto:"></a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/chn-lyzhi">
+              <span class="icon  icon--github">
+                <svg viewBox="0 0 16 16">
+                  <path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/>
+                </svg>
+              </span>
+
+              <span class="username">chn-lyzhi</span>
+            </a>
+          </li>
+          
+
+          
+        </ul>
+      </div>
+
+      <div class="footer-col  footer-col-3">
+        <p class="text">闻道有先后
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
