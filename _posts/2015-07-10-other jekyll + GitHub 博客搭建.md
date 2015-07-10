@@ -25,6 +25,7 @@ markdown: redcarpet
 # 分页 0为不分页
 paginate: 50
 ```
+
 其中需要修改title、description、github_username、markdown
 
 文章名格式
@@ -33,13 +34,11 @@ paginate: 50
 文章头部格式
 
 ```
----
 layout: post
 title:  "iOS - 多个UIButton绑定一个点击事件"
 date:   2015-05-09 10:44
 categories: jekyll update
 tags: iOS
----
 ```
 
 
