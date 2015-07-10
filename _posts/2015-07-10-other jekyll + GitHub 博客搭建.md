@@ -9,23 +9,6 @@ tags: other
 
 `_config.yml`文件
 
-```
-# Site settings
-title: 非生物
-# email: chn.lyzasd(@)gmail.com
-description: > # this means to ignore newlines until "baseurl:"
-   闻道有先后
-baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://yourdomain.com" # the base hostname & protocol for your site
-github_username:  chn-lyzhi
-
-# Build settings
-markdown: redcarpet
-
-# 分页 0为不分页
-paginate: 50
-```
-
 其中需要修改title、description、github_username、markdown
 
 文章名格式
