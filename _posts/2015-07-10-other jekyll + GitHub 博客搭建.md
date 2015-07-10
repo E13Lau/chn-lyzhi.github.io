@@ -31,16 +31,6 @@ paginate: 50
 文章名格式
 `yyyy-MM-DD-文件名`
 
-文章头部格式
-
-```
-layout: post
-title:  "iOS - 多个UIButton绑定一个点击事件"
-date:   2015-05-09 10:44
-categories: jekyll update
-tags: iOS
-```
-
 
 参考：
 － <http://jekyllcn.com/docs/assets/>
