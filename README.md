@@ -1,2 +1,2 @@
 
-#[个人博客](chn-lyzhi.github.io)
+#[个人博客](http://chn-lyzhi.github.io)
