@@ -18,6 +18,8 @@ Xcode 6.3.1
 
 添加Cell的约束，其中lable的行数改为0，其中xib中的contentView的高度并不需要固定，完全可以自由发挥。
 
+> 似乎仅有当 cell 只有一个 Label 时适用？当往 Xib 添加一个 Button 出现问题
+
 ViewController中，需要注册一个这个cell，以便复用，以及添加下列两行代码
 
 ```
@@ -25,4 +27,4 @@ self.texttableView.estimatedRowHeight = 80.f;
 self.texttableView.rowHeight = UITableViewAutomaticDimension;
 ```
 
-至此应该能实现cell动态高度。该方法仅支持 iOS 8 +
+至此应该能实现cell动态高度。该方法仅支持 iOS 7 +
