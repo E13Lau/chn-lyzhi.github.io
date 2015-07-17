@@ -4,13 +4,6 @@ title:  "iOS 开发-UIScrollView + Auto Layout + Size Classes"
 date:   2015-07-13 14:35
 categories: jekyll update
 tags: iOS
-
-
-1.scrollView与scrollView的superview的约束关系用来确定scrollView的frame 
-
-2.scrollView中的『contentView』的约束关系用来确定scrollView的contentInsets 
-
-3.contentView的宽度和高度用来确定scrollView的contentSize
 ---
 
 * Storyboard 中把 ViewController 的 top Bar 设为 `Opaque Navigation Bar`
@@ -44,3 +37,10 @@ Question:
 * 更新所有 Frame
 
 ![Gif](/assets/AutoLayout三等分.gif)
+
+
+> 1.scrollView与scrollView的superview的约束关系用来确定scrollView的frame 
+> 2.scrollView中的『contentView』的约束关系用来确定scrollView的contentInsets 
+> 3.contentView的宽度和高度用来确定scrollView的contentSize
+
+by :v2ex.com

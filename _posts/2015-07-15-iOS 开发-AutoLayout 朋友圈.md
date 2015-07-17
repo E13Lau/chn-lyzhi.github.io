@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "2015-07-15-iOS 开发-AutoLayout 朋友圈"
+title:  "iOS 开发-AutoLayout 朋友圈"
 date:   2015-07-15 08:39
 categories: jekyll update
 tags: iOS
